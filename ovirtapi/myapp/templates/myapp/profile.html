@@ -7,15 +7,18 @@
             <th scope="col">Name</th>
             <th scope="col">ID</th>
             <th scope="col">Status</th>
-            <th scope="col">1</th>
-            <th scope="col">2</th>
-            <th scope="col">3</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
-
         {% for key, value in body.items %}
-        <tr class="table-success">
+            {% if value.1 == 'up' %}
+                <tr class="table-success">
+            {% elif value.1 == 'down' %}
+                <tr class="table-danger">
+            {% endif%}
 
             <td>{{value.0}}</td>
             <td>{{key}}</td>
@@ -34,24 +37,23 @@
                 </button>
                 {%endif%}
                 {% if value.1 == "wait_for_launch" or value.1 == "powering_up" or value.1 == "image_locked"%}
-                <a href="{{ request.get_full_path }}" class="btn btn-success">Обновить</a>
+                <a href="{{ request.get_full_path }}" class="btn btn-info">Обновить</a>
                 {%endif%}
-            </form>
+
             </td>
             <td>
-
-
-                <a class="btn btn-danger" href="#" role="button">Удалить</a>
-
+                <button type="submit" class="btn btn-danger" name="delete" value={{key}}>
+                 Удалить
+                </button>
             </td>
+            </form>
             <td>
                 <form action="#" method="get">
                     <button type="button" class="mybtn33" href="#">Console</button>
                 </form>
             </td>
-
-            {% endfor %}
         </tr>
+        {% endfor %}
     </table>
 </div>
 

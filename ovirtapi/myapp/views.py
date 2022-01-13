@@ -49,6 +49,11 @@ def profile(request):
             manage_vm(login_data['up'], 'start', all_item.name, all_item.password)
         elif "down" in login_data:
             manage_vm(login_data['down'], 'stop', all_item.name, all_item.password)
+        elif "delete" in login_data:
+            print(request.POST)
+            deletevm(login_data['delete'], all_item.name, all_item.password)
+
+
     elif (request.GET):
         print("GET")
     #
@@ -93,19 +98,19 @@ def profile(request):
 #         return render(request, 'myapp/get_console.html')
 #
 #
-# def delete_vm(request, pk, vm):
-#     userlist = User_list.objects.get(id=pk)
-#     listusers = {}
-#     pk = pk
-#     vm = vm
-#     if (request.POST):
-#         data = request.POST.dict()
-#         # print(data)
-#         if 'vm' in data:
-#             deletevm(data['vm'], pk, userlist.name, userlist.password)
-#             return HttpResponseRedirect("/users%i" % (int(pk)))
-#
-#     # body = get_vms_login(userlist.name, userlist.password)
-#     context = {'userlist': userlist, 'vm': vm, 'pk': pk, }
-#
-#     return render(request, 'myapp/delete.html', context)
+def delete_vm(request, pk, vm):
+    userlist = User_list.objects.get(id=pk)
+    listusers = {}
+    pk = pk
+    vm = vm
+    if (request.POST):
+        data = request.POST.dict()
+        # print(data)
+        if 'vm' in data:
+            deletevm(data['vm'], pk, userlist.name, userlist.password)
+            return HttpResponseRedirect("/users%i" % (int(pk)))
+
+    # body = get_vms_login(userlist.name, userlist.password)
+    context = {'userlist': userlist, 'vm': vm, 'pk': pk, }
+
+    return render(request, 'myapp/delete.html', context)

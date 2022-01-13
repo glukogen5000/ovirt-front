@@ -153,7 +153,7 @@ def get_vms_login(username, password):
 #             manage_vm(login_data['down'], 'stop')
 #
 #     return render(request, 'myapp/index.html', {'body': get_vms})
-def deletevm(vm_name, pk, username, passwd):
+def deletevm(vm_name, username, passwd):
     response = requests.delete(
         'https://ovirt2-engine.test.local/ovirt-engine/api/vms/' + vm_name, verify=False,
 
