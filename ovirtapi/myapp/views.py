@@ -7,43 +7,43 @@ from requests.structures import CaseInsensitiveDict
 import paramiko
 from django.contrib.auth.decorators import login_required
 
-def get_bearer_key(username, password):
-    response = requests.get(
-        'https://ovirt2-engine.test.local/ovirt-engine/sso/oauth/token', verify=False,
-        params={'grant_type': 'password',
-                'scope': 'ovirt-app-api',
-                'username': username,
-                'password': password},
-        headers={'Accept': 'application/json',
-                 'Content-Type': 'application/x-www-form-urlencoded'})
-    bearer_key = json.loads(response.text)
-    return (bearer_key['access_token'])
+# def get_bearer_key(username, password):
+#     response = requests.get(
+#         'https://ovirt2-engine.test.local/ovirt-engine/sso/oauth/token', verify=False,
+#         params={'grant_type': 'password',
+#                 'scope': 'ovirt-app-api',
+#                 'username': username,
+#                 'password': password},
+#         headers={'Accept': 'application/json',
+#                  'Content-Type': 'application/x-www-form-urlencoded'})
+#     bearer_key = json.loads(response.text)
+#     return (bearer_key['access_token'])
 
 
 
-def get_vms_login(username, password):
-    response = requests.get(
-            'https://ovirt2-engine.test.local/ovirt-engine/api/vms', verify=False,
-
-            headers={'Accept': 'application/xml',
-                     'Authorization': 'Bearer ' + get_bearer_key(username, password)})
-
-    if response.status_code == 200:
-        soup = bs4.BeautifulSoup(response.text, 'lxml')
-        all_virt_machine = soup.findAll("vm")
-        vm_name = {}
-        for item in all_virt_machine:
-            comment = item.find('comment').text
-            id = item.get('id')
-            status = item.find('status').text
-            ip = item.find('address')
-            if ip:
-                ip = ip.text
-            vm_name[id] = comment, status, ip
-        return (vm_name)
-
-    else:
-        print(response.status_code)
+# def get_vms_login(username, password):
+#     response = requests.get(
+#             'https://ovirt2-engine.test.local/ovirt-engine/api/vms', verify=False,
+#
+#             headers={'Accept': 'application/xml',
+#                      'Authorization': 'Bearer ' + get_bearer_key(username, password)})
+#
+#     if response.status_code == 200:
+#         soup = bs4.BeautifulSoup(response.text, 'lxml')
+#         all_virt_machine = soup.findAll("vm")
+#         vm_name = {}
+#         for item in all_virt_machine:
+#             comment = item.find('comment').text
+#             id = item.get('id')
+#             status = item.find('status').text
+#             ip = item.find('address')
+#             if ip:
+#                 ip = ip.text
+#             vm_name[id] = comment, zx, ip
+#         return (vm_name)
+#
+#     else:
+#         print(response.status_code)
 
 
 
@@ -87,15 +87,14 @@ def profile(request):
         is_active:    {request.user.is_active}
     """
     all_item = User_list.objects.get()
-
-    # if (request.POST):
-    #     login_data = request.POST.dict()
-    #     if 'up' in login_data:
-    #         manage_vm(login_data['up'], 'start', all_item.name, all_item.password)
-    #     elif "down" in login_data:
-    #         manage_vm(login_data['down'], 'stop', all_item.name, all_item.password)
-    # elif (request.GET):
-    #     print("GET")
+    if (request.POST):
+        login_data = request.POST.dict()
+        if 'up' in login_data:
+            manage_vm(login_data['up'], 'start', all_item.name, all_item.password)
+        elif "down" in login_data:
+            manage_vm(login_data['down'], 'stop', all_item.name, all_item.password)
+    elif (request.GET):
+        print("GET")
     #
     body = get_vms_login(all_item.name, all_item.password)
     #body = {'1': 1, '2': 2, '21231232': 3, '123123123': 4}

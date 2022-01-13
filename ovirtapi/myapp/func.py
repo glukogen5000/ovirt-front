@@ -44,13 +44,13 @@ def lan_create():
 
 
 
-def get_key(username, passwd):
+def get_key(username, password):
     response = requests.get(
         'https://ovirt2-engine.test.local/ovirt-engine/sso/oauth/token', verify=False,
         params={'grant_type': 'password',
                 'scope': 'ovirt-app-api',
                 'username': username,
-                'password': passwd},
+                'password': password},
         headers={'Accept': 'application/json',
                  'Content-Type': 'application/x-www-form-urlencoded'})
     key = json.loads(response.text)
@@ -106,12 +106,12 @@ def manage_vm(vmid, run, username, password):
         return
 
 
-def get_vms_login(username, passwd):
+def get_vms_login(username, password):
     response = requests.get(
         'https://ovirt2-engine.test.local/ovirt-engine/api/vms', verify=False,
 
         headers={'Accept': 'application/xml',
-                 'Authorization': 'Bearer ' + get_key(username, passwd)},
+                 'Authorization': 'Bearer ' + get_key(username, password)},
     )
     if response.status_code == 200:
         soup = bs4.BeautifulSoup(response.text, 'lxml')
