@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<!-- Basic -->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Mobile Metas -->
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- Site Metas -->
+<title>HostCloud - Responsive HTML5 Template</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- Site Icons -->
+<link rel="shortcut icon" href="{% static 'myapp/images/favicon.ico' %}" type="image/x-icon"/>
+<link rel="apple-touch-icon" href="{% static 'myapp/images/apple-touch-icon.png' %}">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="{% static 'myapp/css/bootstrap.min.css'  %}">
+<!-- Site CSS -->
+<link rel="stylesheet" href="{% static 'myapp/css/style.css' %}">
+<!-- Colors CSS -->
+<link rel="stylesheet" href="{% static 'myapp/css/colors.css' %}">
+<!-- ALL VERSION CSS -->
+<link rel="stylesheet" href="{% static 'myapp/css/versions.css' %}">
+<!-- Responsive CSS -->
+<link rel="stylesheet" href="{% static 'myapp/css/responsive.css' %}">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{% static 'myapp/css/custom.css' %}">
+
+<!-- Modernizer for Portfolio -->
+<script src="{% static 'myapp/js/modernizer.js' %}"></script>
+
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body class="host_version">
+
+
+<!-- LOADER -->
+<div id="preloader">
+    <div class="loading">
+        <div class="finger finger-1">
+            <div class="finger-item">
+                <span></span><i></i>
+            </div>
+        </div>
+        <div class="finger finger-2">
+            <div class="finger-item">
+                <span></span><i></i>
+            </div>
+        </div>
+        <div class="finger finger-3">
+            <div class="finger-item">
+                <span></span><i></i>
+            </div>
+        </div>
+        <div class="finger finger-4">
+            <div class="finger-item">
+                <span></span><i></i>
+            </div>
+        </div>
+        <div class="last-finger">
+            <div class="last-finger-item"><i></i></div>
+        </div>
+    </div>
+</div>
+<!-- END LOADER -->
+
+<header class="header header_style_01">
+    <nav class="megamenu navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'index' %}"><img
+                        src="{% static 'myapp/images/logos/logo-hosting.png' %}" alt="image"></a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a class="active" href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'index' %}">Features </a></li>
+                    <li><a href="{% url 'index' %}">Domain</a></li>
+                    <li><a href="{% url 'index' %}">Hosting</a></li>
+                    <li><a href="{% url 'index' %}">Pricing</a></li>
+                    <li><a href="{% url 'index' %}">Testimonials</a></li>
+                    <li><a href="{% url 'index' %}">Contact</a></li>
+                </ul>
+
+                {% if request.user.is_authenticated == False %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a class="btn-light btn-radius btn-brd log" href="#" data-toggle="modal" data-target="#login"><i
+                            class="flaticon-padlock"></i> Customer Login</a></li>
+                </ul>
+                {%endif%}
+
+                {% if request.user.is_authenticated == True %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a class="nav-link" href="{% url 'logout'  %} ">Выход</a></li>
+                </ul>
+                {%endif%}
+
+            </div>
+
+        </div>
+    </nav>
+</header>
+
+
+<body>
+
+<div class='container mb-5'><br>
+        <h2> Профиль {{all_item.name}}</h2>
+        пароль - {{all_item.password}} <br>
+        email - {{all_item.email}}<br>
+        account - {{all_item.account}}<br>
+        баланс - {{all_item.balanse}}<br>
+
+</div>
+
+</body>
+</html>
+<a href="#" id="scroll-to-top" class="dmtop global-radius"><i class="fa fa-angle-up"></i></a>
+
+<!-- ALL JS FILES -->
+<script src="{% static 'myapp/js/all.js' %}"></script>
+<!-- ALL PLUGINS -->
+<script src="{% static 'myapp/js/custom.js' %} "></script>

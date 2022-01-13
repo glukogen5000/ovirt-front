@@ -1,0 +1,94 @@
+{% extends "myapp\body.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+<!--            /<a class="btn btn-primary" href="{%url 'get_createvm' userlist.id  %}" role="button">Создать ВМ</a>-->
+        </div>
+        <div class="col">
+
+        </div>
+        <div class="col">
+
+        </div>
+    </div>
+</div>
+<br>
+
+<div class="container">
+    <table id="datatablesSimple">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">ID</th>
+            <th scope="col">Status</th>
+            <th scope="col">1</th>
+            <th scope="col">2</th>
+            <th scope="col">3</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for key, value in body.items %}
+        {% if value.1 == 'up'%}
+        <tr class="table-success">
+            {% elif value.1 == 'down'%}
+        <tr class="table-danger">
+            {% endif%}
+
+            <td>{{value.0}}</td>
+            <td>{{key}}</td>
+            <td>{{ value.1}}</td>
+            <td>IP</td>
+            <td>
+                <form method="post" name="form1">
+                    {% csrf_token %}
+                    {% if value.1 == "up" %}
+                    <button type="submit" class="btn btn-danger" name="down" value={{key}}>
+                        Выключить
+                    </button>
+                    {%endif%}
+                    {% if value.1 == "down" %}
+                    <button type="submit" class="btn btn-success" name="up" value={{key}}>
+                        Включить
+                    </button>
+                    {%endif%}
+                    {% if value.1 == "wait_for_launch" or value.1 == "powering_up" or value.1 == "image_locked"%}
+                    <a href="{{ request.get_full_path }}" class="btn btn-success">Обновить</a>
+                    {%endif%}
+                </form>
+            </td>
+            <td>
+
+
+                <a class="btn btn-danger" {% if value.1 == "up" %} hidden {%endif%} {% if value.1 == "down" %}{%endif%}
+                href="{%url 'delete_vm' userlist.id key %}" role="button">Удалить</a>
+
+            </td>
+            <td>
+                <form action="#" method="get">
+                    <button type="button" class="mybtn33" href="{% url 'get_console'%}">Console</button>
+                </form>
+            </td>
+
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-primary" href="{%url 'index' %}" role="button">Назад</a>
+        </div>
+        <div class="col">
+
+        </div>
+        <div class="col">
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
