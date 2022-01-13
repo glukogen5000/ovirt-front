@@ -63,7 +63,7 @@ def get_datacenter():
 
         headers={'Accept': 'application/xml',
 
-                 'Authorization': 'Bearer ' + get_key('admin@internal', '1412Flvby')},
+                 'Authorization': 'Bearer ' + get_key('', '')},
     )
     if response.status_code == 200:
         soup = bs4.BeautifulSoup(response.text, 'lxml')
@@ -76,7 +76,7 @@ def get_datacenter():
 #         'https://ovirt2-engine.test.local/ovirt-engine/api/vms', verify=False,
 #
 #         headers={'Accept': 'application/xml',
-#                  'Authorization': 'Bearer ' + get_key('admin@internal', '1412Flvby')},
+#                  'Authorization': 'Bearer ' + get_key('admin@internal', '')},
 #     )
 #     if response.status_code == 200:
 #         soup = bs4.BeautifulSoup(response.text, 'lxml')

@@ -7,45 +7,6 @@ from requests.structures import CaseInsensitiveDict
 import paramiko
 from django.contrib.auth.decorators import login_required
 
-# def get_bearer_key(username, password):
-#     response = requests.get(
-#         'https://ovirt2-engine.test.local/ovirt-engine/sso/oauth/token', verify=False,
-#         params={'grant_type': 'password',
-#                 'scope': 'ovirt-app-api',
-#                 'username': username,
-#                 'password': password},
-#         headers={'Accept': 'application/json',
-#                  'Content-Type': 'application/x-www-form-urlencoded'})
-#     bearer_key = json.loads(response.text)
-#     return (bearer_key['access_token'])
-
-
-
-# def get_vms_login(username, password):
-#     response = requests.get(
-#             'https://ovirt2-engine.test.local/ovirt-engine/api/vms', verify=False,
-#
-#             headers={'Accept': 'application/xml',
-#                      'Authorization': 'Bearer ' + get_bearer_key(username, password)})
-#
-#     if response.status_code == 200:
-#         soup = bs4.BeautifulSoup(response.text, 'lxml')
-#         all_virt_machine = soup.findAll("vm")
-#         vm_name = {}
-#         for item in all_virt_machine:
-#             comment = item.find('comment').text
-#             id = item.get('id')
-#             status = item.find('status').text
-#             ip = item.find('address')
-#             if ip:
-#                 ip = ip.text
-#             vm_name[id] = comment, zx, ip
-#         return (vm_name)
-#
-#     else:
-#         print(response.status_code)
-
-
 
 def index(request):  # отрисовка главной страницы
 
@@ -65,11 +26,6 @@ def index(request):  # отрисовка главной страницы
     return render(request, 'myapp/index.html', context)
 
 
-# @allowed_users(allowed_roles=['contractor'])
-# def userPage(request):
-#     all_item = request.user.contractor.itemproject_set.all()
-#
-#     context = {'all_item': all_item}
 
 @login_required(login_url='login')
 def profile(request):
@@ -97,7 +53,7 @@ def profile(request):
         print("GET")
     #
     body = get_vms_login(all_item.name, all_item.password)
-    #body = {'1': 1, '2': 2, '21231232': 3, '123123123': 4}
+
     context = {'all_item': all_item, 'text': text, 'body': body, }
     return render(request, 'myapp/profile.html', context)
 
