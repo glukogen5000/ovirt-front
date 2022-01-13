@@ -2,7 +2,6 @@ import requests
 import json
 import bs4
 
-
 #
 #
 # def get_key(username, passwd):
@@ -111,19 +110,43 @@ import bs4
 # create_user_ovirt('test2', 'ES935dpi')
 from requests.auth import HTTPBasicAuth
 
-
-def get_token(username, passwd):
+def get_bearer_key(username, passwd):
     response = requests.get(
-        'https://ovirt2-engine.test.local/ovirt-engine/api', verify=False, auth=HTTPBasicAuth(username,passwd),
-        params={},
+        'https://ovirt2-engine.test.local/ovirt-engine/sso/oauth/token', verify=False,
+        params={'grant_type': 'password',
+                'scope': 'ovirt-app-api',
+                'username': username,
+                'password': passwd},
         headers={'Accept': 'application/json',
-                 'prefer': 'persistent-auth',
-                 'Content-Type': 'application/xml',
-                  })
-
-    # key = json.loads(response.text)
-    return print(response.text)
+                 'Content-Type': 'application/x-www-form-urlencoded'})
+    bearer_key = json.loads(response.text)
+    return (bearer_key['access_token'])
 
 
 
-get_token('user3@internal', 'ES935dpi')
+def get_vms_login(username, passwd):
+    response = requests.get(
+            'https://ovirt2-engine.test.local/ovirt-engine/api/vms', verify=False,
+
+            headers={'Accept': 'application/xml',
+                     'Authorization': 'Bearer ' + get_bearer_key(username, passwd)})
+
+    if response.status_code == 200:
+        soup = bs4.BeautifulSoup(response.text, 'lxml')
+        all_virt_machine = soup.findAll("vm")
+        vm_name = {}
+        for item in all_virt_machine:
+            z = item.find('name').text
+            r = item.get('id')
+            zx = item.find('status').text
+            ip = item.find('address')
+            if ip:
+                ip = ip.text
+            vm_name[z] = r, zx, ip
+        return (vm_name)
+
+    else:
+        print(response.status_code)
+
+
+get_token('test1@internal', 'ES935dpi')

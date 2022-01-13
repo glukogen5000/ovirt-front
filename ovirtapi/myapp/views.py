@@ -7,10 +7,49 @@ from requests.structures import CaseInsensitiveDict
 import paramiko
 from django.contrib.auth.decorators import login_required
 
+def get_bearer_key(username, password):
+    response = requests.get(
+        'https://ovirt2-engine.test.local/ovirt-engine/sso/oauth/token', verify=False,
+        params={'grant_type': 'password',
+                'scope': 'ovirt-app-api',
+                'username': username,
+                'password': password},
+        headers={'Accept': 'application/json',
+                 'Content-Type': 'application/x-www-form-urlencoded'})
+    bearer_key = json.loads(response.text)
+    return (bearer_key['access_token'])
+
+
+
+def get_vms_login(username, password):
+    response = requests.get(
+            'https://ovirt2-engine.test.local/ovirt-engine/api/vms', verify=False,
+
+            headers={'Accept': 'application/xml',
+                     'Authorization': 'Bearer ' + get_bearer_key(username, password)})
+
+    if response.status_code == 200:
+        soup = bs4.BeautifulSoup(response.text, 'lxml')
+        all_virt_machine = soup.findAll("vm")
+        vm_name = {}
+        for item in all_virt_machine:
+            comment = item.find('comment').text
+            id = item.get('id')
+            status = item.find('status').text
+            ip = item.find('address')
+            if ip:
+                ip = ip.text
+            vm_name[id] = comment, status, ip
+        return (vm_name)
+
+    else:
+        print(response.status_code)
+
+
 
 def index(request):  # отрисовка главной страницы
-    listusers = ""  # №User_list.objects.all()
-    context = {'listusers': listusers}
+
+    context = {}
 
     if request.method == 'POST':  # аутентификация
         username = request.POST.get('username')
@@ -19,10 +58,10 @@ def index(request):  # отрисовка главной страницы
         # print(username, password)
         if user is not None:
             login(request, user)
-            userpk = User_list.objects.filter(name=user)
-            context2 = {'pk': userpk[0].id}
+            context2 = {'username': user.id}
             return render(request, 'myapp/index.html', context2)
-
+        else:
+            pass
     return render(request, 'myapp/index.html', context)
 
 
@@ -48,45 +87,30 @@ def profile(request):
         is_active:    {request.user.is_active}
     """
     all_item = User_list.objects.get()
-    print(all_item)
-    print(text)
-    context = {'all_item': all_item, 'text': text, }
+
+    # if (request.POST):
+    #     login_data = request.POST.dict()
+    #     if 'up' in login_data:
+    #         manage_vm(login_data['up'], 'start', all_item.name, all_item.password)
+    #     elif "down" in login_data:
+    #         manage_vm(login_data['down'], 'stop', all_item.name, all_item.password)
+    # elif (request.GET):
+    #     print("GET")
+    #
+    body = get_vms_login(all_item.name, all_item.password)
+    #body = {'1': 1, '2': 2, '21231232': 3, '123123123': 4}
+    context = {'all_item': all_item, 'text': text, 'body': body, }
     return render(request, 'myapp/profile.html', context)
 
-
-# def index_get_users_all(request):
-#     listusers = User_list.objects.all()
-#     context = {'listusers': listusers}
-#
-#     if request.method == 'POST':
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-#
-#         user = authenticate(request, username=username, password=password)
-#         print(username, password)
-#         if user is not None:
-#             login(request, user)
-#             print("if user")
-#             return HttpResponseRedirect("/user_info")
-#
-#     return render(request, 'myapp/index.html', context)
-#
 #
 # def get_userid(request, pk):
 #     userlist = User_list.objects.get(id=pk)
 #     listusers = {}
-#     if (request.POST):
-#         login_data = request.POST.dict()
-#         if 'up' in login_data:
-#             manage_vm(login_data['up'], 'start', userlist.name, userlist.password)
-#         elif "down" in login_data:
-#             manage_vm(login_data['down'], 'stop', userlist.name, userlist.password)
-#     elif (request.GET):
-#         print("GET")
+#
 #
 #     body = get_vms_login(userlist.name, userlist.password)
 #     context = {'userlist': userlist, 'body': body}
-#     return render(request, 'myapp/get_userid.html', context)
+#     return render(request, 'myapp/profile.html', context)
 #
 #
 # def get_createvm(request, pk):
