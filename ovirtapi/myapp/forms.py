@@ -36,3 +36,6 @@ class CreatevmForm(forms.Form):
     mem = forms.ChoiceField(choices=MEM_CHOICES, label='Объем памяти')
     template = forms.ChoiceField(choices=TEMPLATE_CHOICES, label='ОС')
     hdd = forms.ChoiceField(choices=HDD_CHOICES, label='Объем диска')
+    vm_hostname = forms.CharField(max_length=255, label='Full FQDN hostname')
+    vm_username = forms.CharField(max_length=255, label='VM user')
+    vm_password = forms.CharField(max_length=255, label='VM password')

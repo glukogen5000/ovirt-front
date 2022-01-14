@@ -50,7 +50,6 @@ def profile(request):
         elif "down" in login_data:
             manage_vm(login_data['down'], 'stop', all_item.name, all_item.password)
         elif "delete" in login_data:
-            print(request.POST)
             deletevm(login_data['delete'], all_item.name, all_item.password)
 
 
@@ -75,8 +74,9 @@ def get_createvm(request):
         if form.is_valid():
             # prin/t(frm.cleaned_data)
             create_vm(all_item.name, all_item.password, form.cleaned_data['name'], form.cleaned_data['cpu'],
-                      form.cleaned_data['mem'], form.cleaned_data['hdd'], form.cleaned_data['template'])
-            return render(request, 'myapp/profile.html', context)
+                      form.cleaned_data['mem'], form.cleaned_data['hdd'], form.cleaned_data['template'],
+                      form.cleaned_data['vm_hostname'], form.cleaned_data['vm_username'], form.cleaned_data['vm_password'])
+            return HttpResponseRedirect('/profile')
         else:
             form = CreatevmForm()
 

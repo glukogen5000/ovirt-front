@@ -1,3 +1,5 @@
+import time
+
 import requests
 import json
 import bs4
@@ -7,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 
 
-def disk_create(vm_name, hdd_size, namedisk):
+def disk_create_no_template(vm_name, hdd_size, namedisk):
     text = f"""
         <disk_attachment>
             <bootable>true</bootable>
@@ -23,6 +25,13 @@ def disk_create(vm_name, hdd_size, namedisk):
                 </storage_domains>
             </disk>
         </disk_attachment>"""
+    return text
+
+def disk_resize(hdd_size):
+    text = f"""
+          <disk>
+        <provisioned_size>{hdd_size}</provisioned_size>
+    </disk>"""
     return text
 
 
@@ -57,18 +66,18 @@ def get_key(username, password):
     return (key['access_token'])
 
 
-def get_datacenter():
-    response = requests.get(
-        'https://ovirt2-engine.test.local/ovirt-engine/api/datacenters', verify=False,
-
-        headers={'Accept': 'application/xml',
-
-                 'Authorization': 'Bearer ' + get_key('', '')},
-    )
-    if response.status_code == 200:
-        soup = bs4.BeautifulSoup(response.text, 'lxml')
-        dc_list = [x.get_text(strip=True) for x in soup.select('name')]
-        return dc_list
+# def get_datacenter():
+#     response = requests.get(
+#         'https://ovirt2-engine.test.local/ovirt-engine/api/datacenters', verify=False,
+#
+#         headers={'Accept': 'application/xml',
+#
+#                  'Authorization': 'Bearer ' + get_key('', '')},
+#     )
+#     if response.status_code == 200:
+#         soup = bs4.BeautifulSoup(response.text, 'lxml')
+#         dc_list = [x.get_text(strip=True) for x in soup.select('name')]
+#         return dc_list
 
 
 # def get_vms():
@@ -163,7 +172,7 @@ def deletevm(vm_name, username, passwd):
     )
 
 
-def create_vm(username, passwd, vm_name, cpu, mem, hdd, template):
+def create_vm(username, passwd, vm_name, cpu, mem, hdd, template, vm_hostname, vm_username, vm_password):
     data = f"""
             <vm>
             <name>{uuid.uuid4()}</name>
@@ -187,60 +196,91 @@ def create_vm(username, passwd, vm_name, cpu, mem, hdd, template):
             	<initialization>
                      <cloud_init>
                   <host>
-                     <address>myhost.mydomain.com</address>
+                     <address>{vm_hostname}</address>
                   </host>
                      <users>
                         <user>
-                        <user_name>root</user_name>
-                      <password>root</password>
+                            <user_name>{vm_username}</user_name>
+                            <password>{vm_password}</password>
                          </user>
-                        </users>
+                      </users>
 	         </cloud_init>
         </initialization>
     	</vm>
         """
     # print(data)
     # print(data2)
-
+    beaver_key = get_key(username, passwd)
     response = requests.post(
         'https://ovirt2-engine.test.local/ovirt-engine/api/vms', verify=False,
 
         headers={'Accept': 'application/xml',
                  'Content-Type': 'application/xml',
-                 'Authorization': 'Bearer ' + get_key(username, passwd)},
+                 'Authorization': 'Bearer ' + beaver_key},
         data=data,
 
     )
     if response.status_code == 201 or response.status_code == 202:
         soup = bs4.BeautifulSoup(response.text, 'lxml')
+        # print(soup)
+        # print('-'*100)
         all_vms_user = soup.findAll("vm")
-        vm_info = {}
+        # print(all_vms_user)
+        vm_id = ''
         for vm in all_vms_user:
-            vm_comment = vm.find('comment').text
+            # vm_comment = vm.find('comment').text
             vm_id = vm.get('id')
-            vm_status = vm.find('status').text
-            vm_url_stop = vm.find("link", {"rel": "stop"})['href']
-            # print(url_stop)
-            vm_info[vm_id] = vm_comment, vm_status, vm_url_stop
-            data2 =disk_create(vm_id, hdd, vm_comment)
-            responsehdd = requests.post(
-                'https://ovirt2-engine.test.local/ovirt-engine/api/vms/'+ vm_id+'/diskattachments', verify=False,
+            # print(vm_id)
+        #     vm_status = vm.find('status').text
+        #     vm_url_stop = vm.find("link", {"rel": "stop"})['href']
+        #     # print(url_stop)
+        #     vm_info[vm_id] = vm_comment, vm_status, vm_url_stop
+        response_hdd = requests.get(
+            'https://ovirt2-engine.test.local/ovirt-engine/api/vms/'+vm_id+'/diskattachments', verify=False,
 
-                headers={'Accept': 'application/xml',
-                         'Content-Type': 'application/xml',
-                         'Authorization': 'Bearer ' + get_key(username, passwd)},
-                data=data2,
-            )
+            headers={'Accept': 'application/xml',
+                     'Authorization': 'Bearer ' + beaver_key},
+        )
+        if response_hdd.status_code == 200:
+            soup = bs4.BeautifulSoup(response_hdd.text, 'lxml')
+            disk_attachment = soup.findAll("disk_attachment")
+            disk_id = ''
+            for disk in disk_attachment:
+                # vm_comment = vm.find('comment').text
+                disk_id = disk.get('id')
+
+            data_disk_size =disk_resize(hdd)
+
             datalan = lan_create()
             responselan = requests.post(
                 'https://ovirt2-engine.test.local/ovirt-engine/api/vms/' + vm_id + '/nics', verify=False,
 
                 headers={'Accept': 'application/xml',
                          'Content-Type': 'application/xml',
-                         'Authorization': 'Bearer ' + get_key(username, passwd)},
+                         'Authorization': 'Bearer ' + beaver_key},
                 data=datalan,
             )
+            # time.sleep(20)
+            x=0
+            response_resize = requests.put(
+                'https://ovirt2-engine.test.local/ovirt-engine/api/disks/' + disk_id, verify=False,
 
+                headers={'Accept': 'application/xml',
+                         'Content-Type': 'application/xml',
+                         'Authorization': 'Bearer ' + beaver_key},
+                data=data_disk_size,
+            )
+            while response_resize.status_code == 409:
+                response_resize = requests.put(
+                    'https://ovirt2-engine.test.local/ovirt-engine/api/disks/' + disk_id, verify=False,
+
+                    headers={'Accept': 'application/xml',
+                             'Content-Type': 'application/xml',
+                             'Authorization': 'Bearer ' + beaver_key},
+                    data=data_disk_size,
+                )
+                x = x+1
+                print(x)
 
         return
 

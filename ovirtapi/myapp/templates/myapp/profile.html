@@ -27,7 +27,7 @@
             <td><form method="post" name="form1">
                 {% csrf_token %}
                 {% if value.1 == "up" %}
-                <button type="submit" class="btn btn-danger" name="down" value={{key}}>
+                <button type="submit" class="btn btn-warning" name="down" value={{key}}>
                     Выключить
                 </button>
                 {%endif%}
@@ -42,7 +42,7 @@
 
             </td>
             <td>
-                <button type="submit" class="btn btn-danger" name="delete" value={{key}}>
+                <button type="submit" class="btn btn-danger {% if value.1 == "up" %} hidden {%endif%}{% if value.1 == "down" %}{%endif%} " name="delete" value={{key}} >
                  Удалить
                 </button>
             </td>
