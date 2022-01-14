@@ -56,5 +56,10 @@
         {% endfor %}
     </table>
 </div>
+<br>
+<br>
+<a class="btn btn-primary" href="{%url 'get_createvm' %}" role="button">Создать ВМ</a>
+<a href="{{ request.get_full_path }}" class="btn btn-info">Обновить</a>
+
 
 {% endblock %}

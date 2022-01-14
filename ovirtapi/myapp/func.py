@@ -265,3 +265,60 @@ def create_disk(*args):
 
 def connect_lan(*args):
     return
+
+
+
+
+#
+# def get_userid(request, pk):
+#     userlist = User_list.objects.get(id=pk)
+#     listusers = {}
+#
+#
+#     body = get_vms_login(userlist.name, userlist.password)
+#     context = {'userlist': userlist, 'body': body}
+#     return render(request, 'myapp/profile.html', context)
+#
+#
+# def get_createvm(request, pk):
+#     userlist = User_list.objects.get(id=pk)
+#     body = get_vms_login(userlist.name, userlist.password)
+#     form = CreatevmForm()
+#     context = {'userlist': userlist, 'body': body, 'form': form}
+#
+#     if request.method == 'POST':
+#         form = CreatevmForm(request.POST)
+#         if form.is_valid():
+#             # prin/t(frm.cleaned_data)
+#             create_vm(userlist.name, userlist.password, form.cleaned_data['name'], form.cleaned_data['cpu'],
+#                       form.cleaned_data['mem'], form.cleaned_data['hdd'], form.cleaned_data['template'])
+#             return HttpResponseRedirect("/users%i" % (int(pk)))
+#         else:
+#             form = CreatevmForm()
+#
+#     return render(request, 'myapp/get_createvm.html', context)
+#
+#
+# def get_console(request):
+#     if (request.GET.get('mybtn')):
+#         print(request.GET)
+#         return render(request, 'myapp/get_console.html')
+#
+#
+# def delete_vm(request, pk, vm):
+#     userlist = User_list.objects.get(id=pk)
+#     listusers = {}
+#     pk = pk
+#     vm = vm
+#     if (request.POST):
+#         data = request.POST.dict()
+#         # print(data)
+#         if 'vm' in data:
+#             deletevm(data['vm'], pk, userlist.name, userlist.password)
+#             return HttpResponseRedirect("/users%i" % (int(pk)))
+#
+#     # body = get_vms_login(userlist.name, userlist.password)
+#     context = {'userlist': userlist, 'vm': vm, 'pk': pk, }
+#
+#     return render(request, 'myapp/delete.html', context)
+
